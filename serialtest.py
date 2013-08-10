@@ -16,7 +16,7 @@ header[2] = 0x00
 #frame[0] is the beginning of the strand !?!?!?
 #and frame[239*3] is the end....
 for i in range(240*8): # should just be the first strut
-    frame[(0+i)*3] = 0#(i) % 240 #ends should be red
+    frame[(0+i)*3] = 255#(i) % 240 #ends should be red
     frame[(0+i)*3+1] = 0
     frame[(0+i)*3+2] = 255#(240-i) % 240 # beginnings should be blue
 

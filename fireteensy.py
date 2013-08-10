@@ -34,10 +34,11 @@ class TeensyRouter:
         self.config_path = config_path
         self.strands = {} #map from strand numbers to teensy, octo strand pairs
         self.port = 3021
-        self.address = '127.0.0.1'
+        self.address = '192.168.1.134'
         self.frames = {}
         self.serials = {}
-
+        self._net_connected = False
+        
     def initialize(self):
         return self.readConfig() and self.connectTeensys() and self.initUDP()
 
@@ -47,7 +48,7 @@ class TeensyRouter:
         with open(self.config_path, 'rb') as cfg:
             configuration = pickle.load(cfg)
             if 'teensys' not in configuration.keys():
-                return false
+                return False
             self.teensy_config = configuration['teensys']
 
         
@@ -64,13 +65,11 @@ class TeensyRouter:
                 strand = key
                 octo_strand = strand_dict[key]
                 self.strands[strand] = (teensy_num, octo_strand)
-            
-
         return True
             
     def connectTeensys(self):
         if not len(self.teensy_config.keys()) == 3:
-            return false
+            return False
         self.serials = {}
         for teensy_num in self.teensy_config.keys():
             try:
@@ -79,9 +78,8 @@ class TeensyRouter:
                 print "connected to teensy %s" % teensy_num
             except:
                 print "could not connect to all teensys: disconnecting any open connections"
-                for k in self.serials.keys():
-                    serials[k].close() #make sure to release any currently used ports
-                return false
+                self.shutdown()
+                return False
         print "successfully connected to teensys"
         return True
 
@@ -89,6 +87,7 @@ class TeensyRouter:
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self.socket.bind((self.address, self.port))
         print "successfully connected to UDP"
+        self._net_connected = True
         return True
 
     def serve_forever(self):
@@ -140,12 +139,31 @@ class TeensyRouter:
         self.packer.packForOcto(self.frames[teensy])
         self.serials[teensy].write(header)
         self.serials[teensy].write(self.packer.cur_frame)
-        
+
+    def shutdown(self):
+        for k in self.serials.keys(): 
+            serials[k].close() #make sure to release any currently used ports
+        if self._net_connected:
+            self.socket.close()    #close the socket
+
+
+
+
+t = TeensyRouter('./teensy-strands.pckl')
+
+def shutdown(arg1, arg2):
+    t.shutdown()
+    exit(0)
+
+import signal
+import sys
+signal.signal(signal.SIGINT, shutdown)
 
     
 if __name__ == "__main__":
-    t = TeensyRouter('./teensy-strands.pckl')
     if not(t.initialize()):
+        while 1:
+            pass
         exit(-1)
     t.serve_forever()
     

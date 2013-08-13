@@ -42,7 +42,7 @@ def InitGL():                # We call this right after our OpenGL window is cre
     glEnable(GL_BLEND)
     glShadeModel(GL_SMOOTH)                # Enables Smooth Color Shading
     glPointSize(2)
-
+    
     if not glUseProgram:
         print( 'Missing Shader Objects!' )
         sys.exit(1)
@@ -130,9 +130,9 @@ def DrawGLScene():
     timings += [time.time()]
     if len(timings) > 60:
         timings = timings[1:]
-    if timings[-1] - fps_timer > 0.1:
+    if timings[-1] - fps_timer > 0.1 and len(timings) > 1:
         fps = len(timings) / (timings[-1] - timings[0])
-        glutSetWindowTitle("%f FPS" % fps)
+        #glutSetWindowTitle("%f FPS" % fps)
         
         
     glBlendFuncSeparate(GL_ONE, GL_ONE, GL_ONE, GL_ZERO)
@@ -167,7 +167,7 @@ def DrawGLScene():
 
     
 def ReSizeGLScene(Width, Height):
-    pass
+    glViewport(0,0,Width,Height)
     
 
 def getFixtureVertices(fixture):
@@ -217,7 +217,7 @@ if __name__ == "__main__":
     
     glutInit(sys.argv)
     #glutInitContextVersion(3, 2)
-    glutInitWindowSize(1280, 1024)
+    glutInitWindowSize(1024, 768)
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA | GLUT_ALPHA | GLUT_DEPTH)
     glutCreateWindow("test")
     glutShowWindow( )

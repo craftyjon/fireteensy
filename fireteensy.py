@@ -34,7 +34,7 @@ class TeensyRouter:
         self.config_path = config_path
         self.strands = {} #map from strand numbers to teensy, octo strand pairs
         self.port = 3021
-        self.address = '192.168.1.134'
+        self.address = '127.0.0.1'
         self.frames = {}
         self.serials = {}
         self._net_connected = False

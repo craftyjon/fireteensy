@@ -8,13 +8,18 @@ import numpy as np
 from util.scene import Scene
 import socket
 import sys, time, os, Image, struct, time
-
-
-
-
+from threading import Thread, Lock
 
 # PyOpenGL 3.0.1 introduces this convenience module...
 from OpenGL.GL.shaders import *
+
+
+
+
+read_strands = 0
+strands_pair = [{}, {}]
+strand_mutex = Lock()
+
 
 import time, sys
 program = None
@@ -120,10 +125,12 @@ def LoadRGBATexture (path):
 	Picture = None
 	return True, texid					# // Return True (All Good)
 
+
+strands = {}
 timings = []
 fps_timer = 0.0
 def DrawGLScene():
-    global sock, timings, fps_timer
+    global sock, timings, fps_timer, read_strands, strands_pair, strand_mutex
     if program:
         glUseProgram(program)
 
@@ -141,12 +148,10 @@ def DrawGLScene():
     glActiveTexture(GL_TEXTURE0)
     glBindTexture(GL_TEXTURE_2D, tex_name);
 
-
-    for i in range(18):
-        data, addr = sock.recvfrom(1024)
-        data = struct.unpack('B'*len(data), data)
-        strand, length, cmd = getHeaders(data)
-        DrawLED_Strand(strand, data[4:724])
+    with strand_mutex:
+        strands = strands_pair[read_strands]
+        for strand in range(18):
+            DrawLED_Strand(strand, strands[strand])
 
     
     # glBegin(GL_TRIANGLES)
@@ -193,10 +198,38 @@ def InitStrandVertices():
 
     
 def InitScene():
-    global scene
+    global scene, strands
     scene = Scene('./scenes/echodome.json')
     InitStrandVertices()
+    print "Initializing strand values"
+    for i in range(18):
+        data, addr = sock.recvfrom(1024)
+        data = struct.unpack('B'*len(data), data)
+        strand, length, cmd = getHeaders(data)
+        strands[strand] = data[4:724]
 
+
+def networkListen():
+    global read_strands, strands_pair, strand_mutex
+    while 1:
+        write_strands = (read_strands + 1) % 2
+        for i in range(18):
+            data, addr = sock.recvfrom(1024)
+            data = struct.unpack('B'*len(data), data)
+            strand, length, cmd = getHeaders(data)
+            strands_pair[write_strands][strand][:] = data[4:724]
+
+        with strand_mutex:
+            read_strands = write_strands
+
+        
+def StartNetworkListener():
+    global strands_pair
+    for i in range(18):
+        strands_pair[0][i] = bytearray(720)
+        strands_pair[1][i] = bytearray(720)
+    network_listen_thread = Thread(target=networkListen)
+    network_listen_thread.start()
     
 def DrawLED_Strand(strand, color_buffer):
     global strand_vertices
@@ -234,5 +267,6 @@ if __name__ == "__main__":
 
     InitGL()
     InitScene()
+    StartNetworkListener()
     glutMainLoop( )
 

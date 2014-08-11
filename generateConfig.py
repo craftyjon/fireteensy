@@ -99,7 +99,7 @@ class teensyUtil:
 
     
     def findTeensys(self):
-        self.teensyFiles = ['/dev/' + x for x in os.listdir('/dev') if 'tty.usbmodem' in x]
+        self.teensyFiles = ['/dev/' + x for x in os.listdir('/dev') if 'ttyACM' in x]
         print "Found teensy list:"
         print self.teensyFiles
         return len(self.teensyFiles) == 3 and self.proceed()

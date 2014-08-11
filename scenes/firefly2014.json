@@ -1,0 +1,251 @@
+{
+  "backdrop_enable": true, 
+  "backdrop_filename": "firefly2014truss.png", 
+  "bounding_box": [
+    640, 
+    640
+  ], 
+  "center": [
+    321, 
+    372
+  ], 
+  "extents": [
+    640, 
+    640
+  ], 
+  "file-type": "scene", 
+  "fixtures": [
+    {
+      "address": 0, 
+      "pixels": 240, 
+      "pos1": [
+        11, 
+        462
+      ], 
+      "pos2": [
+        204, 
+        127
+      ], 
+      "strand": 0, 
+      "type": "linear"
+    }, 
+    {
+      "address": 0, 
+      "pixels": 240, 
+      "pos1": [
+        11, 
+        466
+      ], 
+      "pos2": [
+        393, 
+        603
+      ], 
+      "strand": 1, 
+      "type": "linear"
+    }, 
+    {
+      "address": 0, 
+      "pixels": 240, 
+      "pos1": [
+        86, 
+        602
+      ], 
+      "pos2": [
+        286, 
+        255
+      ], 
+      "strand": 2, 
+      "type": "linear"
+    }, 
+    {
+      "address": 0, 
+      "pixels": 240, 
+      "pos1": [
+        243, 
+        598
+      ], 
+      "pos2": [
+        440, 
+        253
+      ], 
+      "strand": 3, 
+      "type": "linear"
+    }, 
+    {
+      "address": 0, 
+      "pixels": 240, 
+      "pos1": [
+        552, 
+        601
+      ], 
+      "pos2": [
+        158, 
+        599
+      ], 
+      "strand": 4, 
+      "type": "linear"
+    }, 
+    {
+      "address": 0, 
+      "pixels": 240, 
+      "pos1": [
+        554, 
+        599
+      ], 
+      "pos2": [
+        483, 
+        201
+      ], 
+      "strand": 5, 
+      "type": "linear"
+    }, 
+    {
+      "address": 0, 
+      "pixels": 240, 
+      "pos1": [
+        630, 
+        464
+      ], 
+      "pos2": [
+        235, 
+        466
+      ], 
+      "strand": 6, 
+      "type": "linear"
+    }, 
+    {
+      "address": 0, 
+      "pixels": 240, 
+      "pos1": [
+        553, 
+        332
+      ], 
+      "pos2": [
+        156, 
+        331
+      ], 
+      "strand": 7, 
+      "type": "linear"
+    }, 
+    {
+      "address": 0, 
+      "pixels": 240, 
+      "pos1": [
+        399, 
+        60
+      ], 
+      "pos2": [
+        599, 
+        408
+      ], 
+      "strand": 8, 
+      "type": "linear"
+    }, 
+    {
+      "address": 0, 
+      "pixels": 240, 
+      "pos1": [
+        397, 
+        59
+      ], 
+      "pos2": [
+        105, 
+        306
+      ], 
+      "strand": 9, 
+      "type": "linear"
+    }, 
+    {
+      "address": 0, 
+      "pixels": 240, 
+      "pos1": [
+        242, 
+        61
+      ], 
+      "pos2": [
+        439, 
+        404
+      ], 
+      "strand": 10, 
+      "type": "linear"
+    }, 
+    {
+      "address": 0, 
+      "pixels": 240, 
+      "pos1": [
+        165, 
+        196
+      ], 
+      "pos2": [
+        366, 
+        541
+      ], 
+      "strand": 11, 
+      "type": "linear"
+    }
+  ], 
+  "labels_enable": false, 
+  "locked": true, 
+  "strand-settings": [
+    {
+      "color-mode": "BGR8", 
+      "enabled": true, 
+      "id": 0
+    }, 
+    {
+      "color-mode": "BGR8", 
+      "enabled": true, 
+      "id": 1
+    }, 
+    {
+      "color-mode": "BGR8", 
+      "enabled": true, 
+      "id": 2
+    }, 
+    {
+      "color-mode": "BGR8", 
+      "enabled": true, 
+      "id": 3
+    }, 
+    {
+      "color-mode": "BGR8", 
+      "enabled": true, 
+      "id": 4
+    }, 
+    {
+      "color-mode": "BGR8", 
+      "enabled": true, 
+      "id": 5
+    }, 
+    {
+      "color-mode": "BGR8", 
+      "enabled": true, 
+      "id": 6
+    }, 
+    {
+      "color-mode": "BGR8", 
+      "enabled": true, 
+      "id": 7
+    }, 
+    {
+      "color-mode": "BGR8", 
+      "enabled": true, 
+      "id": 8
+    }, 
+    {
+      "color-mode": "BGR8", 
+      "enabled": true, 
+      "id": 9
+    }, 
+    {
+      "color-mode": "BGR8", 
+      "enabled": true, 
+      "id": 10
+    }, 
+    {
+      "color-mode": "BGR8", 
+      "enabled": true, 
+      "id": 11
+    }
+  ]
+}

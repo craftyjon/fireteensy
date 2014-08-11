@@ -25,8 +25,11 @@ import socket
 import serial
 import pickle
 import time
-from profilehooks import profile
+import array
+#from profilehooks import profile
 from packing import packer
+
+
 
 
 class TeensyRouter:
@@ -38,6 +41,7 @@ class TeensyRouter:
         self.frames = {}
         self.serials = {}
         self._net_connected = False
+        self._debug = []
         
     def initialize(self):
         return self.readConfig() and self.connectTeensys() and self.initUDP()
@@ -48,6 +52,7 @@ class TeensyRouter:
         with open(self.config_path, 'rb') as cfg:
             configuration = pickle.load(cfg)
             if 'teensys' not in configuration.keys():
+                print "Error line 51"
                 return False
             self.teensy_config = configuration['teensys']
 
@@ -65,25 +70,28 @@ class TeensyRouter:
                 strand = key
                 octo_strand = strand_dict[key]
                 self.strands[strand] = (teensy_num, octo_strand)
+        print "readConfig successful"
         return True
             
     def connectTeensys(self):
-        if not len(self.teensy_config.keys()) == 3:
-            return False
+        #if not len(self.teensy_config.keys()) == 3:
+        #    return False
         self.serials = {}
         for teensy_num in self.teensy_config.keys():
             try:
                 self.serials[teensy_num] = \
-                    serial.Serial('/dev/tty.usbmodem'+teensy_num, 256000)
+                    serial.Serial('/dev/ttyACM'+teensy_num, 256000)
                 print "connected to teensy %s" % teensy_num
             except:
                 print "could not connect to all teensys: disconnecting any open connections"
                 self.shutdown()
+                sys.exit(5)
                 return False
         print "successfully connected to teensys"
         return True
 
     def initUDP(self):
+        print "initUDP..."
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self.socket.bind((self.address, self.port))
         print "successfully connected to UDP"
@@ -92,35 +100,16 @@ class TeensyRouter:
 
     def serve_forever(self):
         while True:
-            for i in range(18):
-                data, addr = self.socket.recvfrom(1024)
-                data = struct.unpack('B'*len(data), data)
-                strand, length, cmd = getHeaders(data)
-                #print strand, length, cmd
-                teensy, octo_strand = self.strands[strand]
-                #print teensy, octo_strand
-                bps = 3*self.leds_per_strand
-                #octo-strands are 0-indexed
-                self.frames[teensy][octo_strand*bps:(octo_strand+1)*bps] = data[4:bps+4]
-                #print "setting frame data from byte %i to %i" % (octo_strand*bps, (octo_strand+1)*bps)
-            header = bytearray(3)
-            header[1] = 0x00
-            header[2] = 0x00
-            commands = ['*', '*', '*']
-            for command, teensy in zip(commands, self.serials.keys()):
-                header[0] = command
-                self.sendFrame(header, teensy)
-
-
             
-    def serve_once(self):
-        for x in range(1):
-            for i in range(18):
+            #time.sleep(.1)
+            for i in range(12):
                 data, addr = self.socket.recvfrom(1024)
                 data = struct.unpack('B'*len(data), data)
+                #print data
                 strand, length, cmd = getHeaders(data)
                 #print strand, length, cmd
-                teensy, octo_strand = self.strands[strand]
+                #print strand, length, cmd
+                teensy, octo_strand = self.strands[str(strand)]
                 #print teensy, octo_strand
                 bps = 3*self.leds_per_strand
                 #octo-strands are 0-indexed
@@ -129,20 +118,31 @@ class TeensyRouter:
             header = bytearray(3)
             header[1] = 0x00
             header[2] = 0x00
-            commands = ['*', '*', '*']
+            commands = ['*', '*']
+            #print "sending"
             for command, teensy in zip(commands, self.serials.keys()):
                 header[0] = command
+                self._debug = self.frames[teensy]
                 self.sendFrame(header, teensy)
-
                 
     def sendFrame(self, header, teensy):
         self.packer.packForOcto(self.frames[teensy])
-        self.serials[teensy].write(header)
-        self.serials[teensy].write(self.packer.cur_frame)
+        try:
+            self.serials[teensy].write(header)
+            self.serials[teensy].write(self.packer.cur_frame)
+        except serial.SerialException:
+            print "serial fuckup"
+            dd = array.array('B', [])
+            dd.extend(self._debug)
+            print len(dd)
+            print dd
+            for k in self.serials.keys(): 
+                self.serials[k].close()
+            self.connectTeensys()
 
     def shutdown(self):
         for k in self.serials.keys(): 
-            serials[k].close() #make sure to release any currently used ports
+            self.serials[k].close() #make sure to release any currently used ports
         if self._net_connected:
             self.socket.close()    #close the socket
 
@@ -153,7 +153,7 @@ t = TeensyRouter('./teensy-strands.pckl')
 
 def shutdown(arg1, arg2):
     t.shutdown()
-    exit(0)
+    exit(1)
 
 import signal
 import sys
